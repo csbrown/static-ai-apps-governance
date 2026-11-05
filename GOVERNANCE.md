@@ -12,10 +12,10 @@ Everything is public: the apps, their code, their working notes, their history. 
 
 | Layer | Where it lives | Who can change it |
 |---|---|---|
-| Governance: mission, roles, objectives, rules | This repository. Its address is held by the human owner, outside every agent's reach, and each session is given a fresh copy | The human owner only |
+| Governance: mission, roles, objectives, rules; the core | This repository, outside the org, beyond every agent's reach. Each session is given its rules and a fresh copy | The human owner only |
 | Strategy: how the curator pursues its objective | `NOTES.md` and `ROADMAP.md` in the library repo | The curator |
 | Execution: the apps themselves | Each app's repo pair | The IC working on that app |
-| Enforcement: checks, merges, data | `static-ai-apps/org-ci` | The human owner only |
+| Enforcement: checks, merges, data | `static-ai-apps/org-ci` | The maintainer, with the owner |
 
 Nothing in a lower layer can change a higher one. The curator's notes cannot grant the curator new powers, and an app's files cannot change the rules for that app.
 
@@ -44,7 +44,7 @@ Trusted automation in `static-ai-apps/org-ci`, which no agent can write to. Vali
 The only thing that starts agents: a small program in this repository ([core/](core/)), run by the human owner. It gives every agent the rules in its system prompt, accepts a small set of structured requests from the curator (§8), mints short-lived tokens for each session, caps spending, and runs each session in its own throwaway container. No agent can change it.
 
 ### Maintainer
-An agent that works interactively with the human owner on the infrastructure: `org-ci` and the template's example app. It runs in its own container that can see only the project's repositories. It can't touch the library, the apps or their workspaces, can't start sessions or hold App keys, and can't push to this repository: it may prepare changes here for the owner to review and push. Instructions: [MAINTAINER.md](MAINTAINER.md).
+An agent that works interactively with the human owner on the infrastructure: `org-ci` and the template's example app. It runs in its own container that can see only the project's repositories. It can't touch the library, the apps or their workspaces, can't start sessions or hold App keys, and has no part in this repository beyond reading it. Instructions: [MAINTAINER.md](MAINTAINER.md).
 
 ### Curator
 One agent role. Runs the library, researches, allocates budget, launches IC sessions with advice, commissions new apps, and retires apps that no longer earn their place. Instructions: [CURATOR.md](CURATOR.md).
@@ -234,12 +234,13 @@ The curator should retire an app only when its marginal contribution to Q is neg
 
 ## 13. Changing governance
 
-Only the human owner pushes to this repository; the maintainer may prepare changes for the owner to review. Every change bumps the version and adds a changelog entry. Changes to Q get a new Q version so past and present performance can be compared.
+Only the human owner changes this repository. Every change bumps the version and adds a changelog entry. Changes to Q get a new Q version so past and present performance can be compared.
 
 Agents may suggest changes in their `NOTES.md` under a heading `## Governance suggestions`. They should expect no reply.
 
 ## Changelog
 
+- **v0.9** (2026-11-05): governance lives in the owner's account, outside the org, and only the owner maintains it; the maintainer maintains the org and only reads governance. Reserved names are never apps, in the core and in CI.
 - **v0.8** (2026-11-04): the core: the program that starts every agent moves into this repository, with the agent image. Rules are delivered in each agent's system prompt; every role reads governance at `/governance`. One agent per session: no sub-agents, and no starting other agents. A roadmap of planned changes.
 - **v0.7.1** (2026-11-04): the governance address is held by the owner, not in `org-ci`; only the copy a session starts with is authoritative.
 - **v0.7** (2026-11-04): governance moves from a branch of `app-template` to its own repository, `static-ai-apps/governance`, with the maintainer's instructions alongside everyone else's. Only the owner can push to it.

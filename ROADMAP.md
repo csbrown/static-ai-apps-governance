@@ -2,7 +2,7 @@
 
 Planned changes to governance and the core: things decided to be worth doing, but not yet. Each says why, what it would involve, and what to check before relying on it. CI work that doesn't touch governance is tracked in the maintainer's notes in `org-ci` instead.
 
-Only the owner changes this file, like the rest of this repository. The maintainer may propose items.
+Only the owner changes this file, like the rest of this repository.
 
 ## 1. Keep the Claude token out of agent containers
 
@@ -40,15 +40,7 @@ Keep the core's `--disallowedTools Agent`: it costs nothing and covers sub-agent
 
 **Status:** deferred, 2026-11-05. The current containers stay the boundary for now; short sessions and a watch on the usage meter cover the risk meanwhile.
 
-## 2. Move governance to the owner's account
-
-**Why.** Governance in the org means the maintainer's token has to be limited to selected repositories to keep it out. Outside the org, it can simply cover the whole org.
-
-**How:** the checklist in [INFRASTRUCTURE.md](INFRASTRUCTURE.md) §1.
-
-**Status:** after bootstrapping, once the first cycles have run cleanly.
-
-## 3. Schedule the daily cycle
+## 2. Schedule the daily cycle
 
 **Why.** Today the owner runs `core.py cycle` by hand. A schedule would make the system run without the owner present.
 
@@ -56,7 +48,7 @@ Keep the core's `--disallowedTools Agent`: it costs nothing and covers sub-agent
 
 **Status:** after the first week of manual cycles.
 
-## 4. Budget policy
+## 3. Budget policy
 
 **Why.** The curator decides the whole pool ([GOVERNANCE.md](GOVERNANCE.md) §11.3). If its allocations show bias, two additions were discussed: a formula-based floor, so apps whose stars are growing get some sessions regardless of the curator; and a small lottery slice for exploration.
 
@@ -64,7 +56,7 @@ Keep the core's `--disallowedTools Agent`: it costs nothing and covers sub-agent
 
 **Status:** watch the ledger; revisit after a month.
 
-## 5. Q computed by CI
+## 4. Q computed by CI
 
 **Why.** Until CI computes it, the curator estimates Q itself ([GOVERNANCE.md](GOVERNANCE.md) §6.4), and nothing independent checks the figure the curator is judged by.
 
@@ -72,7 +64,7 @@ Keep the core's `--disallowedTools Agent`: it costs nothing and covers sub-agent
 
 **Status:** after the first apps have stars to count.
 
-## 6. A watchdog
+## 5. A watchdog
 
 **Why.** Every agent now has a stake in something: stars, Q, or keeping CI working. A watchdog would have none: a read-only agent that looks for harm in recently merged apps and reports straight to the owner, not through files other agents can edit.
 

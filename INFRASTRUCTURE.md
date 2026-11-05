@@ -8,8 +8,7 @@ Verify each GitHub feature against current documentation before relying on it; G
 
 | Repo | Visibility | What |
 |---|---|---|
-| `governance` | Public | Governance: the rules for every role, this guide, and the core. Only you push to it. In the org for now; ready to move to your account (below) |
-| `app-template` | Public | Template for new apps: the example app. Maintained by you and the maintainer; no workspace |
+| `app-template` | Public | Template for new apps: the example app. Maintained by the maintainer; no workspace |
 | `static-ai-apps.github.io` | Public | The library, published at the site root |
 | `.static-ai-apps.github.io` | Public | The curator's workspace: a fork of the library |
 | `my-app` / `.my-app` | Public | One pair per app, created by CI |
@@ -17,16 +16,11 @@ Verify each GitHub feature against current documentation before relying on it; G
 | `alerts` | **Private** | Issues only: where alerts land. Watch it |
 | `.github` | Public | Org-wide `SECURITY.md` and profile |
 
-### Moving governance out of the org
+### Governance lives outside the org
 
-Its address is simply where your project folder's clone, `<root>/governance`, pulls from. The core reads governance only from that clone, and gives every agent a read-only copy of it. No agent can see or change the address. To move governance:
+This repository lives in your personal account as `static-ai-apps-governance`, not in the org. Locally it's always cloned into `<root>/governance`. Only you change it, with whatever help you choose; no agent and no App can reach it, because every agent identity is scoped to the org. The core reads governance only from your clone, `<root>/governance`, and gives every agent its rules and a read-only copy.
 
-1. On GitHub, transfer the repository to your account (its Settings, Danger zone). History, and redirects from the old address, come with it.
-2. Point your clone at it: `git -C governance remote set-url origin https://github.com/<owner>/<name>.git`.
-3. Do the same for the maintainer's working copy: `git -C repos/governance remote set-url origin …`.
-4. Update the links in the READMEs of `app-template`, `org-ci` and the library. Until then they work through GitHub's redirect.
-5. Keep `governance` in `reserved_names`: if a repo ever took the old name in the org, the redirect would stop working.
-6. Widen the maintainer's token to all repositories in the org (§7). With governance outside the org, nothing in it needs to be excluded.
+`governance` stays in the org's `reserved_names`, and in the core's own reserved list: links to `static-ai-apps/governance` keep redirecting to its home, and no app can take the name.
 
 ## 2. GitHub Apps
 
@@ -55,8 +49,8 @@ Put the bot logins in `org-ci/config/config.json` under `identities`. They're th
 
 Defense in depth: even a token with contents write shouldn't be able to change a published repo.
 
-- **Published repos** (every repo not starting with `.`, except `governance`, `app-template`, `org-ci`, `alerts`, `.github`): restrict creations, updates and deletions on all branches; bypass for `static-ai-apps-ci` only.
-- **`governance` and `app-template`:** restrict updates on all branches; bypass for org owners. This keeps App tokens out; it can't keep the maintainer out of `app-template`, because the maintainer's token acts as you. What keeps the maintainer out of `governance` is its token's scope (§7).
+- **Published repos** (every repo not starting with `.`, except `app-template`, `org-ci`, `alerts`, `.github`): restrict creations, updates and deletions on all branches; bypass for `static-ai-apps-ci` only.
+- **`app-template`:** restrict updates on all branches; bypass for org owners. This keeps App tokens out; it doesn't affect the maintainer, whose token acts as you.
 - Workspaces need no rules: the IC owns them outright.
 
 Rulesets on public repos are available on the free plan (**verify**).
@@ -70,7 +64,7 @@ Rulesets on public repos are available on the free plan (**verify**).
 
 ## 6. One-time setup
 
-1. Create the org's repos from section 1. Push `governance`, `app-template`, the library, and `org-ci`.
+1. Create `governance` in your own account, and the org's repos from section 1. Push `app-template`, the library, and `org-ci`.
 2. Create the three Apps and install them on all repos.
 3. Add `org-ci`'s variables and secrets.
 4. Enable Pages on the library: deploy from `main`, root.
@@ -85,21 +79,23 @@ Everything for running agents lives in one project folder on your machine, which
 
 ```
 <root>/governance/   your clone of this repository: you run the core from here
-<root>/repos/        one clone per project repo, named as on GitHub, and nothing else: all the maintainer sees
+<root>/repos/        one clone per org repo, named as on GitHub, and nothing else: all the maintainer sees
 <root>/.config/      secrets: the core's keys and tokens, the maintainer's token and Claude login
 <root>/data/         the ledger, session logs, assembled rules
 ```
 
 To create it: `git clone` this repository into `<root>/governance`, then run `python3 governance/core/core.py setup`. It makes the rest, clones the repos, and lists the secrets still to add. `.config/` holds the App keys, so treat any copy of the folder as secret, or copy it without `.config/` and recreate that on the other side.
 
-**The core** ([core/](core/)) is the only thing that starts agents, and the only code here that runs on your machine. It holds the App keys and the Claude token, gives every agent its rules in its system prompt, mints narrow tokens per session, runs each session in a fresh container from the agent image (`core/image/`), caps spending, runs the daily cycle, keeps the ledger, and dispatches CI after sessions. Before acting, it fast-forwards `<root>/governance` from GitHub, so it always runs what you've pushed and nothing else. It refuses to run from the maintainer's working copy.
+**The core** ([core/](core/)) is the only thing that starts agents, and the only code here that runs on your machine. It holds the App keys and the Claude token, gives every agent its rules in its system prompt, mints narrow tokens per session, runs each session in a fresh container from the agent image (`core/image/`), caps spending, runs the daily cycle, keeps the ledger, and dispatches CI after sessions. Before acting, it fast-forwards `<root>/governance` from GitHub, so it always runs what you've pushed and nothing else. It refuses to run from anything in `repos/`, which the maintainer can edit.
 
 **The maintainer** runs in its own long-lived container, started with `python3 governance/core/core.py maintainer`. It sees `repos/` at `/repos` and your governance clone, read-only, at `/governance`; its rules are in its system prompt. Its GitHub access is a fine-grained token you create for it, kept in `.config/maintainer/env` as `GH_TOKEN=…`:
 
-- **Resource owner:** static-ai-apps. **Repositories:** only select repositories: `org-ci` and `app-template`, for now. Not `governance`: leaving it out is what makes governance changes yours to push. Once governance has moved out of the org (§1), this can be all repositories. **Expiry:** 30 days.
+- **Resource owner:** static-ai-apps. **Repositories:** all repositories. Governance is in your account, so a token for the org can't reach it. **Expiry:** 30 days.
 - **Repository permissions, read and write:** Actions, Contents, Pull requests, Workflows.
 
-Everything public, which is everything but `alerts`, it can read regardless. When the maintainer prepares a governance change, including one to the core, it commits it on a `proposal/…` branch in `repos/governance/` and tells you. Review it there (`git -C repos/governance log -p main..proposal/<topic>`), then merge and push it yourself. The core picks it up on its next run.
+Its instructions confine it to `org-ci` and `app-template`; the token isn't narrowed to match, because GitHub can't tell its actions from yours anyway. Governance it only reads.
+
+**Changing governance, the core included,** is yours: commit and push from `<root>/governance` (or any clone of it). Don't leave edits there unpushed, or the core's update stops fast-forwarding. The core picks up what you push on its next run.
 
 Fine-grained tokens for an org must be allowed in the org's settings (Personal access tokens). The maintainer signs in to Claude inside its container the first time; the login is kept in `.config/maintainer/home/`.
 

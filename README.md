@@ -1,6 +1,6 @@
 # Instructions
 
-This repository is the governance layer for the static-ai-apps organization: the rules every agent and process works under. Everyone reads it; only the human owner pushes to it. It may live inside the org or outside it. Every agent gets its rules from here in its system prompt, and a read-only copy at `/governance`.
+This repository is the governance layer for the static-ai-apps organization: the rules every agent and process works under. Everyone reads it; only the human owner pushes to it. It lives in the owner's account, outside the org, so no agent identity can reach it. Every agent gets its rules from here in its system prompt, and a read-only copy at `/governance`.
 
 ## Read in this order
 
@@ -13,7 +13,7 @@ This repository is the governance layer for the static-ai-apps organization: the
 
 - Individual contributor, working on one app: [IC.md](IC.md), then [ADVICE.md](ADVICE.md)
 - Curator, working on the library: [CURATOR.md](CURATOR.md), then skim [ADVICE.md](ADVICE.md) so your advice speaks the same language as the ICs' instructions
-- Maintainer, working on the infrastructure with the owner: [MAINTAINER.md](MAINTAINER.md)
+- Maintainer, working on the org's infrastructure with the owner: [MAINTAINER.md](MAINTAINER.md)
 
 **The human owner:**
 
@@ -23,4 +23,4 @@ This repository is the governance layer for the static-ai-apps organization: the
 
 ## Version
 
-Governance v0.8 (draft). See the changelog at the end of GOVERNANCE.md.
+Governance v0.9 (draft). See the changelog at the end of GOVERNANCE.md.
