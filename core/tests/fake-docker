@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+# Fake docker for the core's tests: logs the call, plays the session, prints a Claude-style result.
+import json, os, sys, time
+args = sys.argv[1:]
+open(os.environ["FAKE_LOG"], "a").write(json.dumps(args) + "\n")
+if args[0] != "run":
+    sys.exit(0)
+if "-p" not in args:   # an interactive container, such as the maintainer's: nothing more to play
+    sys.exit(0)
+vols = [args[i + 1] for i, a in enumerate(args) if a == "-v"]
+work = next(v.split(":")[0] for v in vols if v.endswith(":/work"))
+env_file = args[args.index("--env-file") + 1]
+envs = dict(l.split("=", 1) for l in open(env_file).read().splitlines())
+assert set(envs) == {"WS_TOKEN", "GH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN"}, envs
+prompt = args[args.index("-p") + 1]
+budget = float(args[args.index("--max-budget-usd") + 1])
+if "You are the curator" in prompt:
+    json.dump([
+        {"type": "create", "name": "kitchen-timer", "pitch": "A timer."},
+        {"type": "launch", "repo": "kitchen-timer", "budget": 3, "advice": "Build it. MARKERFAKE"},
+        {"type": "launch", "repo": "test-timer", "budget": 3, "advice": ""},
+        {"type": "launch", "repo": "not-an-app", "budget": 1},
+        {"type": "launch", "repo": "test-timer", "budget": 99},
+        {"type": "launch", "repo": "test-timer", "budget": 3, "advice": "third"},
+        {"type": "launch", "repo": "test-timer", "budget": 3, "advice": "fourth"},
+        {"type": "bogus"}], open(os.path.join(work, "requests.json"), "w"))
+if os.environ.get("FAKE_SLOW") and "You are an individual" in prompt:
+    time.sleep(30)
+print(json.dumps({"type": "result", "subtype": "success", "total_cost_usd": round(budget * 0.9, 2),
+                  "num_turns": 42, "result": "done"}))

@@ -12,7 +12,9 @@ The rules of the game, in one paragraph: anything that passes CI gets published.
 
 ## 2. What you start with
 
-The launcher started this session with:
+The core started this session with:
+
+- **your rules** in your system prompt (`GOVERNANCE.md`, `SPEC.md` and this file), and the whole governance repository read-only at `/governance`
 
 - **the app's name,** e.g. `pocket-metronome`, meaning the published repo `static-ai-apps/pocket-metronome` and your workspace `static-ai-apps/.pocket-metronome`
 - **a token** that can push to your workspace and open pull requests on your published repo, and nothing else
@@ -55,7 +57,7 @@ All of these files are published and anyone can read them. Write accordingly: pl
 12. Update `NOTES.md`, and `CHANGELOG.md` if users would notice the change. If you added or removed a feature, update `featureList` in the JSON-LD block too. These go in the same pull request as the code.
 
 ### Ship
-13. When the change is complete and tested, open a pull request from your branch to `main` on the published repo. Title: what changed, in one line. Description: what and why, briefly. This becomes the permanent commit message.
+13. When the change is complete and tested, open a pull request from your branch to `main` on the published repo, with the command in your preamble. Title: what changed, in one line. Description: what and why, briefly. This becomes the permanent commit message.
 14. Opening a pull request is a decision: it says this work is ready for users. Never open one for unfinished work.
 15. CI comments with results, usually within ten minutes. If it blocks, read why, fix it on the same branch and push again. Don't push the same thing twice hoping for a different result.
 16. Once merged, check the live site.
@@ -93,3 +95,5 @@ If you see something that could harm real people, in your app or anyone else's, 
 ## 8. What you can't do
 
 Your token can push to your workspace and open pull requests on your published repo. You can't push to the published repo, change settings, run workflows, star anything or post outside GitHub. If you find yourself wanting to, the answer is "don't."
+
+You work alone. Don't start other agents: sub-agents are switched off, and you must never run Claude or any other AI agent or model from your shell ([GOVERNANCE.md](GOVERNANCE.md) §8). If a task is too big for one session, do part of it well and leave the rest in `NOTES.md` for the next session.

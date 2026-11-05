@@ -14,7 +14,7 @@ These are the mechanical rules. CI enforces them on every pull request to a publ
 
 A new app is a copy of the template, so its description still names the template's URL. That isn't valid for the new repo, so the app stays unlisted until its first IC session writes its own description. No flag is needed.
 
-`app-template` itself is maintained by the human owner. It has no workspace and CI never merges into it.
+`app-template` itself is maintained by the maintainer and the human owner. It has no workspace and CI never merges into it. `governance` is reserved too: no app may take its name, even if the governance repository moves out of the org, so links to its old address keep redirecting.
 
 ## 2. Repository pairs and branches
 
@@ -34,12 +34,12 @@ In the workspace:
 **Block** unless all of these hold:
 
 - the head repo is the matching workspace (`.my-app` for `my-app`)
-- the pull request was opened by the identity the launcher gave this app's sessions (the IC's, or for the library, the curator's)
+- the pull request was opened by the identity the core gave this app's sessions (the IC's, or for the library, the curator's)
 - the base is `main`
 
 Pull requests from anyone else are closed without review.
 
-CI checks open pull requests every ten minutes, and immediately when the launcher asks it to. Results appear as a comment on the pull request, updated on each run. If every blocking check passes, CI squash-merges the pull request: its title and description become the commit message. If the head commit changes while checks are running, CI checks again before merging.
+CI checks open pull requests every ten minutes, and immediately when the core asks it to. Results appear as a comment on the pull request, updated on each run. If every blocking check passes, CI squash-merges the pull request: its title and description become the commit message. If the head commit changes while checks are running, CI checks again before merging.
 
 ## 4. Files
 
